@@ -38,14 +38,16 @@ for url in soup.find_all("a", title=True):
 # %% we grab every artists' song text from links
 
 for i, url in tqdm(enumerate(songs_urls), total=len(songs_urls)):
-    if  i == 5: break
+    if i == 60: break
+    # To avoid IP ban
+    if i % 20 == 0: time.sleep(5)
     # I create the request and parse it with bs4
     soup = soupify(url)
-    with open(f"dataset/songs_{i}.csv", "w") as f:
-        for div in soup.find_all("div",  attrs={'class':"lyrics-body"}):       
+    for div in soup.find_all("div",  attrs={'class':"lyrics-body"}):       
+        with open(f"dataset/songs_{i}.csv", "w") as f:
             f.write(div.text)
-            f.write(";")
-    time.sleep(0.2)
-    f.close()
+    # To avoid IP ban
+    time.sleep(0.5)
+
 
 # %%
