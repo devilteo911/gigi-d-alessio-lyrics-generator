@@ -5,11 +5,16 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
+import time
+from pathlib import Path
 
 # %% building the request and preparing the soup
 
 URL: str = "https://www.lyricsmania.com/gigi_dalessio_lyrics.html"
 URL_SONGS: str = "https://www.lyricsmania.com"
+# I create a folder to store all the songs
+Path('dataset').mkdir(exist_ok=True)
+
 artist: str = "gigi_dalessio"
 
 def soupify(url):
@@ -31,15 +36,16 @@ for url in soup.find_all("a", title=True):
         songs_urls.append(new_url)
 
 # %% we grab every artists' song text from links
-with open("songs.csv", "w") as f:
-    for url in tqdm(songs_urls):
-        # I create the request and parse it with bs4
-        soup = soupify(url)
-        for div in soup.find_all("div",  attrs={'class':"lyrics-body"}):
-                f.write(div.text)
-                f.write(";")
-f.close()
 
-
+for i, url in tqdm(enumerate(songs_urls), total=len(songs_urls)):
+    if  i == 5: break
+    # I create the request and parse it with bs4
+    soup = soupify(url)
+    with open(f"dataset/songs_{i}.csv", "w") as f:
+        for div in soup.find_all("div",  attrs={'class':"lyrics-body"}):       
+            f.write(div.text)
+            f.write(";")
+    time.sleep(0.2)
+    f.close()
 
 # %%
